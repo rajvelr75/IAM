@@ -75,13 +75,13 @@ export const SignUpFormComp = () => {
     },{
       onSuccess: async (cxt)=>{
           toast({
-            title: "Account created successfully",
+            title: "Success",
           });
           push("/dashboard")
       },
       onError: async (cxt)=>{
         toast({
-          title: "Error Creating Account",
+          title: "Error",
           description:cxt.error.message, 
         })
       }
@@ -197,13 +197,13 @@ export const SignInFormComp = () => {
     },{
       onSuccess: async (cxt)=>{
           toast({
-            title: "Account created successfully",
+            title: "Success",
           });
           push("/dashboard")
       },
       onError: async (cxt)=>{
         toast({
-          title: "Error Creating Account",
+          title: "Error",
           description:cxt.error.message, 
         })
       }
@@ -285,6 +285,7 @@ type ForgetForm = z.infer<typeof forgetPasswordSchema>;
 export function ForgetPasswordAlert({
   isForgetClick,setIsForgetClick
 }:{isForgetClick:boolean;setIsForgetClick:Dispatch<SetStateAction<boolean>>}){
+  const {toast} = useToast()
   const form = useForm<ForgetForm>({
     resolver: zodResolver(forgetPasswordSchema),
     defaultValues: {
@@ -292,7 +293,23 @@ export function ForgetPasswordAlert({
     },
   })
   async function onSubmit(values:ForgetForm){
-    console.log(values)
+    const {email} = values
+    await authClient.forgetPassword({
+      email,
+      redirectTo:"/reset-password",
+    },{
+      onSuccess:(ctx)=>{
+        toast({
+          title: "Email sent",
+        })
+      },
+      onError:(ctx)=>{
+        toast({
+          title: "Error",
+          description:ctx.error.message,
+        })
+      }
+    })
   }
     return(
       <Dialog open={isForgetClick} onOpenChange={setIsForgetClick}>
@@ -321,4 +338,91 @@ export function ForgetPasswordAlert({
   </DialogContent>
 </Dialog>
     );
+}
+
+const resetPassFormSchema = z.object({
+  password: z
+    .string()
+    .min(8, "Password must have at least 8 characters")
+    .max(16, "Password must have at most 16 characters"),
+});
+
+type ResetPassForm = z.infer<typeof resetPassFormSchema>;
+
+export function ResetPassComp() {
+  const { toast } = useToast();
+  const { push } = useRouter();
+
+  const form = useForm<ResetPassForm>({
+    resolver: zodResolver(resetPassFormSchema),
+    defaultValues: {
+      password: "",
+    },
+  });
+
+  const {
+    formState: { isSubmitting },
+  } = form;
+
+  async function onSubmit(values: ResetPassForm) {
+    const { password } = values;
+    await authClient.resetPassword(
+      {
+        newPassword: password,
+      },
+      {
+        onSuccess: async (cxt) => {
+          toast({
+            title: "Success!",
+          });
+
+          push("/sign-in");
+        },
+        onError: async (cxt) => {
+          toast({
+            title: "Error!",
+            description: cxt.error.message,
+          });
+        },
+      }
+    );
+  }
+
+  return (
+    <>
+      <Card className="w-[400px]">
+        <CardHeader>
+          <CardTitle className="card-title">Sign In</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+              <FormField
+                control={form.control}
+                name="password"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Password</FormLabel>
+                    <FormControl>
+                      <Input placeholder="rt4yeb5$VW$^Bun" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <div className="w-full">
+                {!isSubmitting ? (
+                  <Button className="w-full" type="submit">
+                    Reset
+                  </Button>
+                ) : (
+                  <Loader2 className="animate-spin mx-auto" />
+                )}
+              </div>
+            </form>
+          </Form>
+        </CardContent>
+      </Card>
+    </>
+  );
 }
