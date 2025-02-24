@@ -7,6 +7,7 @@ import { redirect } from 'next/navigation'
 import { headers } from 'next/headers'
 import { getServerSession } from '@/lib/action'
 import UserSession from '../_components/user-session'
+import UserActions from '../_components/user-action'
 
 export default async function DashboardPage() {
   const session = await getServerSession();
@@ -25,6 +26,7 @@ export default async function DashboardPage() {
       <Header/>
       <UserInfoCard session={session} />
       <UserSession session={session}/>
+      <UserActions session={session} provider={provider} />
     </>
   )
 }

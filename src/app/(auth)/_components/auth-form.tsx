@@ -76,7 +76,7 @@ export const SignUpFormComp = () => {
           toast({
             title: "Success",
           });
-          push("/sign-in")
+          push(`verify-email?email=${email}`)
       },
       onError: async (cxt)=>{
         toast({
