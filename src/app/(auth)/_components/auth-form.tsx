@@ -64,7 +64,6 @@ export const SignUpFormComp = () => {
     formState: { isSubmitting },
   } = form;
 
-  // Handle form submission
   async function onSubmit(values: SignUpForm) {
     const {email, name, password} = values
     await authClient.signUp.email({
@@ -77,7 +76,7 @@ export const SignUpFormComp = () => {
           toast({
             title: "Success",
           });
-          push("/dashboard")
+          push("/sign-in")
       },
       onError: async (cxt)=>{
         toast({
@@ -168,7 +167,6 @@ const signInFormSchema = z.object({
     .max(16, "Password must be at most 16 characters"),
 });
 
-// Infer the type of the form schema
 type SignInForm = z.infer<typeof signInFormSchema>;
 
 export const SignInFormComp = () => {
@@ -187,7 +185,6 @@ export const SignInFormComp = () => {
     formState: { isSubmitting },
   } = form;
 
-  // Handle form submission
   async function onSubmit(values: SignInForm) {
     const {email, password} = values
     await authClient.signIn.email({
@@ -292,6 +289,9 @@ export function ForgetPasswordAlert({
       email: "",
     },
   })
+
+  const {formState:{isSubmitting}} = form
+
   async function onSubmit(values:ForgetForm){
     const {email} = values
     await authClient.forgetPassword({
@@ -302,6 +302,7 @@ export function ForgetPasswordAlert({
         toast({
           title: "Email sent",
         })
+        setIsForgetClick(false);
       },
       onError:(ctx)=>{
         toast({
@@ -315,7 +316,7 @@ export function ForgetPasswordAlert({
       <Dialog open={isForgetClick} onOpenChange={setIsForgetClick}>
   <DialogContent>
     <DialogHeader>
-      <DialogTitle>Reset passowrd</DialogTitle>
+      <DialogTitle>Forget Password</DialogTitle>
       <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
         <FormField
@@ -331,7 +332,15 @@ export function ForgetPasswordAlert({
             </FormItem>
           )}
         />
-        <Button type="submit">Submit</Button>
+                      <div className="w-full">
+                {!isSubmitting ? (
+                  <Button className="w-full" type="submit">
+                    Send
+                  </Button>
+                ) : (
+                  <Loader2 className="animate-spin mx-auto" />
+                )}
+              </div>
       </form>
     </Form>
     </DialogHeader>
@@ -392,7 +401,7 @@ export function ResetPassComp() {
     <>
       <Card className="w-[400px]">
         <CardHeader>
-          <CardTitle className="card-title">Sign In</CardTitle>
+          <CardTitle className="card-title">Enter New Password</CardTitle>
         </CardHeader>
         <CardContent>
           <Form {...form}>
@@ -404,7 +413,7 @@ export function ResetPassComp() {
                   <FormItem>
                     <FormLabel>Password</FormLabel>
                     <FormControl>
-                      <Input placeholder="rt4yeb5$VW$^Bun" {...field} />
+                      <Input placeholder="Enter Password" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
