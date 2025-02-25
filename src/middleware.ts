@@ -1,27 +1,44 @@
-import { NextRequest, NextResponse } from "next/server";
 import axios from "axios";
-import { Session } from "./lib/better-auth/auth-types"; 
+import { NextRequest, NextResponse } from "next/server";
+import { Session } from "./lib/better-auth/auth-types";
 
 async function getMiddlewareSession(req: NextRequest) {
-    try {
-      const response = await axios.get<Session>(`${req.nextUrl.origin}/api/auth/get-session`, {
-        headers: {
-          Cookie: req.headers.get("cookie") || "",
-        },
-      });
-  
-      console.log("[DEBUG] Session data:", response.data);
-      return response.data;
-    } catch (error) {
-      console.error("[ERROR] Failed to fetch session:", error);
-      return null; // Return null instead of crashing the middleware
-    }
-  }
-  
+  const { data: session } = await axios.get<Session>("/api/auth/get-session", {
+    baseURL: req.nextUrl.origin,
+    headers: {
+      //get the cookie from the request
+      cookie: req.headers.get("cookie") || "",
+    },
+  });
 
-export async function middleware(req: NextRequest) {
+  return session;
+}
+
+export default async function authMiddleware(req: NextRequest) {
   const session = await getMiddlewareSession(req);
-  return NextResponse.next();
+  const url = req.url;
+  const pathname = req.nextUrl.pathname;
+
+  if (
+    pathname.startsWith("/sign-") ||
+    pathname.startsWith("/verify-email") ||
+    pathname.startsWith("/reset-password") ||
+    pathname.startsWith("/2fa-verification")
+  ) {
+    if (!session) {
+      return NextResponse.next();
+    }
+
+    return NextResponse.redirect(new URL("/dashboard", url));
+  }
+
+  if (pathname.startsWith("/dashboard")) {
+    if (!session) {
+      return NextResponse.redirect(new URL("/sign-in", url));
+    }
+
+    return NextResponse.next();
+  }
 }
 
 export const config = {
