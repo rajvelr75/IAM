@@ -3,18 +3,31 @@ import { NextRequest, NextResponse } from "next/server";
 import { Session } from "./lib/better-auth/auth-types";
 
 async function getMiddlewareSession(req: NextRequest) {
-  const { data: session } = await axios.get<Session>("/api/auth/get-session", {
-    baseURL: req.nextUrl.origin,
-    headers: {
-      //get the cookie from the request
-      cookie: req.headers.get("cookie") || "",
-    },
-  });
-
-  return session;
+  try {
+    const { data: session } = await axios.get<Session>(
+      `${req.nextUrl.origin}/api/auth/get-session`,
+      {
+        headers: {
+          cookie: req.headers.get("cookie") || "",
+        },
+      }
+    );
+    console.log("Session Data:", session);
+    return session;
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      console.error("Session Fetch Error:", error.message);
+    } else {
+      console.error("An unexpected error occurred:", error);
+    }
+    return null;
+  }
 }
 
+
 export default async function authMiddleware(req: NextRequest) {
+  console.log("Middleware request to:", req.nextUrl.pathname);
+
   const session = await getMiddlewareSession(req);
   const url = req.url;
   const pathname = req.nextUrl.pathname;
@@ -43,9 +56,7 @@ export default async function authMiddleware(req: NextRequest) {
 
 export const config = {
   matcher: [
-    // Skip Next.js internals and all static files, unless found in search params
     "/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)",
-    // Always run for API routes
     "/(api|trpc)(.*)",
   ],
 };

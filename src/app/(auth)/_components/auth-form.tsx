@@ -29,6 +29,7 @@ import { Dispatch, SetStateAction, useState } from "react";
 import { authClient } from "@/lib/better-auth/auth-client";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
+import { GoogleButton } from "./oauth-button";
 
 // Define the schema for form validation
 const signUpFormSchema = z.object({
@@ -88,74 +89,78 @@ export const SignUpFormComp = () => {
   }
 
   return (
-    <Card className="w-[400px]">
-      <CardHeader>
-        <CardTitle className="card-title">Sign Up</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-            {/* Name Field */}
-            <FormField
-              control={form.control}
-              name="name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Username</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Enter your Name" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            {/* Email Field */}
-            <FormField
-              control={form.control}
-              name="email"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Email</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Enter your Email" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            {/* Password Field */}
-            <FormField
-              control={form.control}
-              name="password"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Password</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Enter your Password" type="password" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-              <TypographyP>
-                Already have an account?{" "}
-                <Link href="/sign-in" className="link">
-                  Sign In
-                </Link>
-              </TypographyP>
-            {/* Submit Button */}
-            <div className="w-full">
-              {!isSubmitting ? (
-                <Button type="submit">Sign Up</Button>
-              ) : (
-                <Loader2 className="animate-spin mx-auto" />
-              )}
-            </div>
-          </form>
-        </Form>
-      </CardContent>
-    </Card>
+<Card className="w-[400px] mx-auto flex flex-col items-center justify-center p-6 shadow-lg rounded-lg">
+  <CardHeader className="text-center">
+    <CardTitle className="text-2xl font-semibold">Sign Up</CardTitle>
+  </CardHeader>
+  <CardContent className="w-full">
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 flex flex-col items-center w-full">
+        {/* Name Field */}
+        <FormField
+          control={form.control}
+          name="name"
+          render={({ field }) => (
+            <FormItem className="w-full">
+              <FormLabel>Username</FormLabel>
+              <FormControl>
+                <Input placeholder="Enter your Name" {...field} className="w-full" />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        {/* Email Field */}
+        <FormField
+          control={form.control}
+          name="email"
+          render={({ field }) => (
+            <FormItem className="w-full">
+              <FormLabel>Email</FormLabel>
+              <FormControl>
+                <Input placeholder="Enter your Email" {...field} className="w-full" />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        {/* Password Field */}
+        <FormField
+          control={form.control}
+          name="password"
+          render={({ field }) => (
+            <FormItem className="w-full">
+              <FormLabel>Password</FormLabel>
+              <FormControl>
+                <Input placeholder="Enter your Password" type="password" {...field} className="w-full" />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        {/* Sign-in Link */}
+        <TypographyP className="text-sm text-center">
+          Already have an account?{" "}
+          <Link href="/sign-in" className="text-blue-500 hover:underline">
+            Sign In
+          </Link>
+        </TypographyP>
+        {/* Submit Button */}
+        <div className="w-full flex justify-center">
+          {!isSubmitting ? (
+            <Button type="submit" className="w-full">Sign Up</Button>
+          ) : (
+            <Loader2 className="animate-spin mx-auto" />
+          )}
+        </div>
+      </form>
+    </Form>
+    {/* Google Sign-In Button */}
+    <div className="w-full flex justify-center mt-4">
+      <GoogleButton />
+    </div>
+  </CardContent>
+</Card>
   );
 };
 
@@ -196,7 +201,8 @@ export const SignInFormComp = () => {
           toast({
             title: "Success",
           });
-          push("/dashboard")
+          const { data, error } = await authClient.twoFactor.sendOtp();
+          push("2fa-verification")
       },
       onError: async (cxt)=>{
         toast({
@@ -209,65 +215,71 @@ export const SignInFormComp = () => {
 
   return (
     <>
-    <Card className="w-[400px]">
-      <CardHeader>
-        <CardTitle className="card-title">Sign In</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-            
-            {/* Email Field */}
-            <FormField
-              control={form.control}
-              name="email"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Email</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Enter your Email" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            {/* Password Field */}
-            <FormField
-              control={form.control}
-              name="password"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Password</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Enter your Password" type="password" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                  <div className="flex items-center justify-end w-full h-fit">
-                      <Button variant="link" type="button" onClick={()=>{setIsForgetClick(true)}}>Forget Password</Button>
-                  </div>
-                </FormItem>
-              )}
-            />
-              <TypographyP>
-                Dont have an account?{" "}
-                <Link href="/sign-up" className="link">
-                  Sign Up
-                </Link>
-              </TypographyP>
-            {/* Submit Button */}
-            <div className="w-full">
-              {!isSubmitting ? (
-                <Button type="submit">Sign In</Button>
-              ) : (
-                <Loader2 className="animate-spin mx-auto" />
-              )}
-            </div>
-          </form>
-        </Form>
-      </CardContent>
-    </Card>
-    <ForgetPasswordAlert isForgetClick={isForgetClick} setIsForgetClick={setIsForgetClick}/>
+<div className="min-h-screen flex items-center justify-center">
+  <Card className="w-[400px] flex flex-col items-center justify-center p-6 shadow-lg rounded-lg bg-white">
+    <CardHeader className="text-center">
+      <CardTitle className="text-2xl font-semibold">Sign In</CardTitle>
+    </CardHeader>
+    <CardContent className="w-full">
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 flex flex-col items-center w-full">
+          {/* Email Field */}
+          <FormField
+            control={form.control}
+            name="email"
+            render={({ field }) => (
+              <FormItem className="w-full">
+                <FormLabel>Email</FormLabel>
+                <FormControl>
+                  <Input placeholder="Enter your Email" {...field} className="w-full" />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          {/* Password Field */}
+          <FormField
+            control={form.control}
+            name="password"
+            render={({ field }) => (
+              <FormItem className="w-full">
+                <FormLabel>Password</FormLabel>
+                <FormControl>
+                  <Input placeholder="Enter your Password" type="password" {...field} className="w-full" />
+                </FormControl>
+                <FormMessage />
+                <div className="flex justify-end w-full">
+                  <Button variant="link" type="button" onClick={() => setIsForgetClick(true)}>
+                    Forgot Password?
+                  </Button>
+                </div>
+              </FormItem>
+            )}
+          />
+          {/* Sign-up Link */}
+          <TypographyP className="text-sm text-center">
+            Don't have an account?{" "}
+            <Link href="/sign-up" className="text-blue-500 hover:underline">
+              Sign Up
+            </Link>
+          </TypographyP>
+          {/* Submit Button */}
+          <div className="w-full flex justify-center">
+            {!isSubmitting ? (
+              <Button type="submit" className="w-full">Sign In</Button>
+            ) : (
+              <Loader2 className="animate-spin mx-auto" />
+            )}
+          </div>
+        </form>
+      </Form>
+      {/* Google Sign-In Button */}
+      <GoogleButton />
+    </CardContent>
+  </Card>
+  {/* Forgot Password Alert */}
+  <ForgetPasswordAlert isForgetClick={isForgetClick} setIsForgetClick={setIsForgetClick} />
+</div>
     </>
   );
 };

@@ -19,32 +19,8 @@ export default async function Home() {
     <div className="m-11">
       <Card>
         <CardHeader>
-          <CardTitle className="text-3xl">Hey, I’m Md Faizan 👋</CardTitle>
+          <CardTitle className="text-3xl">Welcome to Home Page</CardTitle>
         </CardHeader>
-        <CardContent>
-          <TypographyP className="text-lg text-gray-600 ">
-            I’m building this project to teach you the secrets of{" "}
-            <Link
-              target="_blank"
-              href="https://www.better-auth.com/"
-              className="text-blue-500 font-medium"
-            >
-              “better-auth”
-            </Link>
-            .
-          </TypographyP>
-          <TypographyP className="text-md text-gray-500">
-            If you like my work, consider supporting me with{" "}
-            <Link
-              target="_blank"
-              href="https://buymeacoffee.com/devfaiz"
-              className="font-medium text-yellow-500"
-            >
-              “Buy Me a Coffee”
-            </Link>
-            .
-          </TypographyP>
-        </CardContent>
         <CardFooter>
             <Link href="/sign-up" className={buttonVariants()}>
               Get Started

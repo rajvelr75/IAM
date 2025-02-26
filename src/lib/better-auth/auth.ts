@@ -1,6 +1,8 @@
 import { betterAuth } from "better-auth";
 import { nextCookies } from "better-auth/next-js";
 import {
+  GOOGLE_CLIENT_ID,
+  GOOGLE_CLIENT_SECRET,
   MONGODB_URI,
   SENDER_EMAIL,
 } from "../constants/env";
@@ -33,6 +35,12 @@ export const auth = betterAuth({
     },
   },
 
+  socialProviders: {
+    google: {
+      clientId: GOOGLE_CLIENT_ID,
+      clientSecret: GOOGLE_CLIENT_SECRET,
+    },
+  },
 
   emailVerification: {
     autoSignInAfterVerification: true,

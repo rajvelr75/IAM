@@ -21,10 +21,11 @@ import { authClient } from "@/lib/better-auth/auth-client";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Loader2, Trash } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
 
 const UserActions = ({session, provider,}: {session: Session;provider: string;}) => {
   return (
-    <Card>
+<Card>
       {provider === "credential" ? (
         <>
           <CardHeader>
@@ -34,7 +35,7 @@ const UserActions = ({session, provider,}: {session: Session;provider: string;})
             <UpdateUser session={session} />
             <UpdateEmailForm session={session} />
             <UpdatePassForm session={session} />
-            {/* <Enable2Fa session={session} /> */}
+            <Enable2Fa session={session} />
             <DeleteUser />
           </CardContent>
         </>
@@ -325,5 +326,126 @@ const updateInfoFormSchema = z.object({
           account
         </Button>
       </div>
+    );
+  }
+
+  const twoFaSchema = z.object({
+    state: z.boolean(),
+    password: z
+      .string()
+      .min(8, "Password must have at least 8 characters")
+      .max(16, "Password must have at most 16 characters"),
+  });
+  
+  type TwoFaForm = z.infer<typeof twoFaSchema>;
+  
+  function Enable2Fa({ session }: { session: Session }) {
+    const { toast } = useToast();
+    const form = useForm<TwoFaForm>({
+      resolver: zodResolver(twoFaSchema),
+      defaultValues: {
+        state: session?.user?.twoFactorEnabled || false,
+        password: "",
+      },
+    });
+  
+    const {
+      formState: { isSubmitting },
+    } = form;
+  
+    async function onSubmit(values: TwoFaForm) {
+      const { password, state } = values;
+  
+      if (state) {
+        console.log("enable");
+  
+        await authClient.twoFactor.enable(
+          {
+            password,
+          },
+          {
+            onSuccess: () => {
+              toast({
+                title: "Enabled",
+              });
+            },
+            onError: (cxt) => {
+              toast({
+                title: "Error!",
+                description: cxt.error.message,
+              });
+            },
+          }
+        );
+      }
+  
+      if (!state) {
+        await authClient.twoFactor.disable(
+          {
+            password,
+          },
+          {
+            onSuccess: () => {
+              toast({
+                title: "Disabled!",
+              });
+            },
+            onError: (cxt) => {
+              toast({
+                title: "Error!",
+                description: cxt.error.message,
+              });
+            },
+          }
+        );
+      }
+    }
+  
+    return (
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+          <FormField
+            control={form.control}
+            name="state"
+            render={({ field }) => (
+              <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
+                <div className="space-y-0.5">
+                  <FormLabel>Enable 2FA</FormLabel>
+                  <FormDescription>
+                    Enhance your account security by enabling Two-Factor
+                    Authentication.
+                  </FormDescription>
+                </div>
+                <FormControl>
+                  <Switch
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                    aria-readonly
+                  />
+                </FormControl>
+              </FormItem>
+            )}
+          />
+  
+          <FormField
+            control={form.control}
+            name="password"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Password</FormLabel>
+                <FormControl>
+                  <Input placeholder="FErt$%$#%^BHN" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          {!isSubmitting ? (
+            <Button type="submit">Submit</Button>
+          ) : (
+            <Loader2 className="animate-spin" />
+          )}
+        </form>
+      </Form>
     );
   }

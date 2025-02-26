@@ -5,7 +5,7 @@ import { format } from "date-fns";
 
 async function UserInfoCard({ session }: { session: Session }) {
   const {
-    user: { createdAt, email, id, emailVerified, name },
+    user: { createdAt, email, id, emailVerified, name, twoFactorEnabled },
   } = session;
 
   return (
@@ -19,6 +19,9 @@ async function UserInfoCard({ session }: { session: Session }) {
         <TypographyP>Email: {email}</TypographyP>
         <TypographyP>
           Is email verified: {emailVerified ? "verified" : "unverified"}
+        </TypographyP>
+        <TypographyP>
+          Is 2FA Enabled: {twoFactorEnabled ? "Enabled" : "Disabled"}
         </TypographyP>
         <TypographyP>Joined at: {format(createdAt, "dd-MMM-yyyy")}</TypographyP>
       </CardContent>
