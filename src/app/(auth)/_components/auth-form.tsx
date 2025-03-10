@@ -30,7 +30,6 @@ import { authClient } from "@/lib/better-auth/auth-client";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
 import { GoogleButton } from "./oauth-button";
-
 // Define the schema for form validation
 const signUpFormSchema = z.object({
   name: z
@@ -42,6 +41,10 @@ const signUpFormSchema = z.object({
     .string()
     .min(8, "Password must be at least 8 characters")
     .max(16, "Password must be at most 16 characters"),
+  role:z
+  .string()
+  .min(2, "Name must be at least 2 characters")
+  .max(20, "Name must be at most 20 characters"),
 });
 
 // Infer the type of the form schema
@@ -58,6 +61,7 @@ export const SignUpFormComp = () => {
       email: "",
       name: "",
       password: "",
+      role:"",
     },
   });
 
@@ -66,27 +70,32 @@ export const SignUpFormComp = () => {
   } = form;
 
   async function onSubmit(values: SignUpForm) {
-    const {email, name, password} = values
-    await authClient.signUp.email({
-      email,
-      password,
-      name,
-      callbackURL:"/dashboard"
-    },{
-      onSuccess: async (cxt)=>{
+    const { email, name, password } = values;
+    await authClient.signUp.email(
+      {
+        email,
+        password,
+        name,
+        callbackURL: "/dashboard",
+      },
+      {
+        onSuccess: async (cxt) => {
           toast({
             title: "Success",
           });
-          push(`verify-email?email=${email}`)
-      },
-      onError: async (cxt)=>{
-        toast({
-          title: "Error",
-          description:cxt.error.message, 
-        })
+    
+          push(`verify-email?email=${email}`);
+        },
+        onError: async (cxt) => {
+          toast({
+            title: "Error",
+            description: cxt.error.message,
+          });
+        },
       }
-    });
+    );
   }
+  
 
   return (
 <Card className="w-[400px] mx-auto flex flex-col items-center justify-center p-6 shadow-lg rounded-lg">

@@ -9,8 +9,7 @@ import {
 import { MongoClient } from "mongodb";
 import { mongodbAdapter } from "better-auth/adapters/mongodb";
 import { resend } from "../resend";
-import { twoFactor } from "better-auth/plugins";
-import { Fascinate } from "next/font/google";
+import { organization, twoFactor } from "better-auth/plugins";
 
 const client = new MongoClient(MONGODB_URI);
 const db = client.db();
@@ -22,7 +21,7 @@ export const auth = betterAuth({
     requireEmailVerification: true,
     enabled: true,
     sendResetPassword: async ({ user, url, token }, request) => {
-      const { data, error } = await resend.emails.send({
+      const { error } = await resend.emails.send({
         from: SENDER_EMAIL,
         to: user.email,
         subject: "Reset your password",
@@ -63,7 +62,7 @@ export const auth = betterAuth({
     deleteUser: {
       enabled: true,
       sendDeleteAccountVerification: async ({ user, url, token }, request) => {
-        const { data, error } = await resend.emails.send({
+        const { error } = await resend.emails.send({
           from: SENDER_EMAIL,
           to: user.email,
           subject: "Confirm your account deletion",
@@ -81,7 +80,7 @@ export const auth = betterAuth({
         { user, newEmail, url, token },
         request
       ) => {
-        const { data, error } = await resend.emails.send({
+        const { error } = await resend.emails.send({
           from: SENDER_EMAIL,
           to: newEmail,
           subject: "Verify your email change",
@@ -94,13 +93,15 @@ export const auth = betterAuth({
       },
     },
   },
+  
   appName: "Authenty",
+  
   plugins: [
     twoFactor({
       skipVerificationOnEnable: true,
       otpOptions: {
         async sendOTP({ user, otp }, request) {
-          const { data, error } = await resend.emails.send({
+          const { error } = await resend.emails.send({
             from: SENDER_EMAIL,
             to: user.email,
             subject: "2 Factor OTP",
@@ -114,5 +115,6 @@ export const auth = betterAuth({
       },
     }),
     nextCookies(),
+    organization(),
   ],
 });

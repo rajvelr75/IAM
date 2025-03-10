@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { LogOut } from "lucide-react";
 import SignOut from "./sign-out";
+import Link from "next/link";
 
 export default async function Header() {
   const session = await getServerSession();
@@ -22,33 +23,65 @@ export default async function Header() {
   const name = session?.user?.name;
 
   return (
-    <Card className="p-0">
-      <CardContent className="py-2 px-4">
-        <header className="w-full h-fit flex items-center justify-between gap-4">
-          <div>
-            <TypographyH3>Dashboard</TypographyH3>
-          </div>
+    <Card className="fixed top-0 left-0 w-full p-0 rounded-none shadow-md z-50 bg-white border-b border-gray-200">
+      <CardContent className="py-3 px-6 flex items-center justify-between">
+        <TypographyH3>Dashboard</TypographyH3>
 
-          <div>
-            <DropdownMenu>
-              <DropdownMenuTrigger>
-                <Avatar>
-                  <AvatarImage
-                    src={profile ? profile : "https://github.com/shadcn.png"}
-                  />
-                  <AvatarFallback>
-                    {name ? name.slice(0, 1) : "P"}
-                  </AvatarFallback>
-                </Avatar>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent>
-                <DropdownMenuLabel>Account Action</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <SignOut/>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
-        </header>
+        <DropdownMenu>
+          <DropdownMenuTrigger>
+            <Avatar className="cursor-pointer transition-transform hover:scale-105">
+              <AvatarImage
+                src={profile ? profile : "https://github.com/shadcn.png"}
+              />
+              <AvatarFallback>
+                {name ? name.slice(0, 1) : "P"}
+              </AvatarFallback>
+            </Avatar>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent
+            align="end"
+            className="mt-2 w-48 rounded-lg shadow-xl bg-white border border-gray-200"
+          >
+            <DropdownMenuLabel className="text-gray-700 text-sm font-semibold px-3 py-2">
+              Account Actions
+            </DropdownMenuLabel>
+            <DropdownMenuSeparator />
+
+            <DropdownMenuItem asChild>
+              <Link
+                href="/user-info"
+                className="block px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-md transition"
+              >
+                🧑‍💼 User Info
+              </Link>
+            </DropdownMenuItem>
+
+            <DropdownMenuItem asChild>
+              <Link
+                href="/session-info"
+                className="block px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-md transition"
+              >
+                🔐 Session Info
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+            <Link
+              href="/update-profile"
+              className="px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-md transition flex items-center gap-2"
+            >
+              🛠️ Profile Settings
+            </Link>
+          </DropdownMenuItem>
+
+
+            <DropdownMenuSeparator />
+            <DropdownMenuItem asChild>
+              <div className="px-3 py-2">
+                <SignOut />
+              </div>
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </CardContent>
     </Card>
   );
