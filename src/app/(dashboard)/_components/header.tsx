@@ -1,9 +1,7 @@
 import { TypographyH3 } from "@/components/ui/typography";
 import { Card, CardContent } from "@/components/ui/card";
-
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { getServerSession } from "@/lib/action";
-
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -25,7 +23,16 @@ export default async function Header() {
   return (
     <Card className="fixed top-0 left-0 w-full p-0 rounded-none shadow-md z-50 bg-white border-b border-gray-200">
       <CardContent className="py-3 px-6 flex items-center justify-between">
-        <TypographyH3>Dashboard</TypographyH3>
+        <div className="flex items-center gap-6">
+          <TypographyH3>Dashboard</TypographyH3>
+          {/* Organization Link */}
+          <Link
+            href="/organization"
+            className="text-gray-700 hover:text-gray-900 transition-colors text-sm font-medium"
+          >
+            Organization
+          </Link>
+        </div>
 
         <DropdownMenu>
           <DropdownMenuTrigger>
@@ -65,14 +72,13 @@ export default async function Header() {
               </Link>
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
-            <Link
-              href="/update-profile"
-              className="px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-md transition flex items-center gap-2"
-            >
-              🛠️ Profile Settings
-            </Link>
-          </DropdownMenuItem>
-
+              <Link
+                href="/update-profile"
+                className="px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-md transition flex items-center gap-2"
+              >
+                🛠️ Profile Settings
+              </Link>
+            </DropdownMenuItem>
 
             <DropdownMenuSeparator />
             <DropdownMenuItem asChild>

@@ -41,10 +41,6 @@ const signUpFormSchema = z.object({
     .string()
     .min(8, "Password must be at least 8 characters")
     .max(16, "Password must be at most 16 characters"),
-  role:z
-  .string()
-  .min(2, "Name must be at least 2 characters")
-  .max(20, "Name must be at most 20 characters"),
 });
 
 // Infer the type of the form schema
@@ -61,7 +57,6 @@ export const SignUpFormComp = () => {
       email: "",
       name: "",
       password: "",
-      role:"",
     },
   });
 
