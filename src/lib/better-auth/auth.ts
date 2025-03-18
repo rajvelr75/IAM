@@ -10,6 +10,8 @@ import { MongoClient } from "mongodb";
 import { mongodbAdapter } from "better-auth/adapters/mongodb";
 import { resend } from "../resend";
 import { organization, twoFactor } from "better-auth/plugins";
+import { admin } from "better-auth/plugins"
+import { ac, moderator, user, admin as adminRole, } from "@/app/(auth)/permissions";
 
 const client = new MongoClient(MONGODB_URI);
 const db = client.db();
@@ -20,7 +22,10 @@ export const auth = betterAuth({
   emailAndPassword: {
     requireEmailVerification: true,
     enabled: true,
-    sendResetPassword: async ({ user, url, token }, request) => {
+    sendResetPassword: async (
+      { user, url, token }: { user: any; url: string; token: string }, 
+      request: Request
+    ) => {
       const { error } = await resend.emails.send({
         from: SENDER_EMAIL,
         to: user.email,
@@ -44,7 +49,10 @@ export const auth = betterAuth({
   emailVerification: {
     autoSignInAfterVerification: true,
     sendOnSignUp: true,
-    sendVerificationEmail: async ({ user, url, token }, request) => {
+    sendVerificationEmail: async (
+      { user, url, token }: { user: any; url: string; token: string },
+      request: Request
+    ) => {
       const { error } = await resend.emails.send({
         from: SENDER_EMAIL,
         to: user.email,
@@ -61,7 +69,10 @@ export const auth = betterAuth({
   user: {
     deleteUser: {
       enabled: true,
-      sendDeleteAccountVerification: async ({ user, url, token }, request) => {
+      sendDeleteAccountVerification: async (
+        { user, url, token }: { user: any; url: string; token: string }, 
+        request: Request
+      ) => {
         const { error } = await resend.emails.send({
           from: SENDER_EMAIL,
           to: user.email,
@@ -77,9 +88,9 @@ export const auth = betterAuth({
     changeEmail: {
       enabled: true,
       sendChangeEmailVerification: async (
-        { user, newEmail, url, token },
-        request
-      ) => {
+        { user, newEmail, url, token }: { user: any; newEmail: string; url: string; token: string },
+        request: Request
+      ) =>  {
         const { error } = await resend.emails.send({
           from: SENDER_EMAIL,
           to: newEmail,
@@ -116,5 +127,13 @@ export const auth = betterAuth({
     }),
     nextCookies(),
     organization(),
+    admin({
+      ac: ac,
+      roles: {
+          admin: adminRole, 
+          user,
+          moderator,
+      }
+  }),
   ],
 });

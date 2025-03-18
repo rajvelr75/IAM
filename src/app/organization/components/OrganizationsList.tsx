@@ -6,12 +6,11 @@ type Organization = {
   id: string;
   name: string;
   slug: string;
-  createdAt: Date; 
+  createdAt: Date;
 };
 
 function OrganizationsList() {
   const { data: organizations } = authClient.useListOrganizations();
-  console.log("Fetched organizations:", organizations);
 
   return (
     <div className="overflow-x-auto">
@@ -33,14 +32,14 @@ function OrganizationsList() {
           <tbody className="divide-y divide-gray-200">
             {organizations.map((org: Organization) => (
               <tr key={org.id} className="hover:bg-gray-100">
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                  {org.name}
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-blue-600 font-medium">
+                  <Link href={`/organization/details/${org.slug}`} className="hover:underline">
+                    {org.name}
+                  </Link>
                 </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{org.slug}</td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  {org.slug}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  {new Date(org.createdAt).toLocaleDateString()} 
+                  {new Date(org.createdAt).toLocaleDateString()}
                 </td>
               </tr>
             ))}

@@ -24,10 +24,6 @@ export default async function DashboardPage() {
   return (
     <> 
       <Header/>
-      <UserActions session={session} provider={provider} />
-      <Link href="/organizations/create" className="text-sm font-medium text-gray-700 hover:text-indigo-600">
-        Create Organization
-      </Link>
     </>
   )
 }
