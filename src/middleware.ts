@@ -42,7 +42,7 @@ export default async function authMiddleware(req: NextRequest) {
       return NextResponse.next();
     }
 
-    return NextResponse.redirect(new URL("/dashboard", url));
+    return NextResponse.redirect(new URL("/apps", url));
   }
 
   if (pathname.startsWith("/dashboard")) {

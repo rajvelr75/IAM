@@ -1,32 +1,17 @@
-import { buttonVariants } from "@/components/ui/button";
-import { TypographyP } from "@/components/ui/typography";
-import Link from "next/link";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Metadata } from "next";
-
-export const metadata: Metadata = {
-  title: "Authenty",
-};
+import { authClient } from "@/lib/better-auth/auth-client";
+import { redirect } from "next/navigation";
 
 export default async function Home() {
-  return (
-    <div className="m-11">
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-3xl">Welcome to Home Page</CardTitle>
-        </CardHeader>
-        <CardFooter>
-            <Link href="/sign-up" className={buttonVariants()}>
-              Get Started
-            </Link>
-        </CardFooter>
-      </Card>
-    </div>
-  );
+  const session = await authClient.getSession();
+
+  // Check if session exists and extract user properly
+  const user = session?.data?.user;
+
+  if (user) {
+    redirect("/apps");
+  } else {
+    redirect("/sign-up");
+  }
+
+  return null; 
 }

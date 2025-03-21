@@ -22,10 +22,7 @@ export const auth = betterAuth({
   emailAndPassword: {
     requireEmailVerification: true,
     enabled: true,
-    sendResetPassword: async (
-      { user, url, token }: { user: any; url: string; token: string }, 
-      request: Request
-    ) => {
+    sendResetPassword: async ({ user, url, token }, request) => {
       const { error } = await resend.emails.send({
         from: SENDER_EMAIL,
         to: user.email,
@@ -49,10 +46,7 @@ export const auth = betterAuth({
   emailVerification: {
     autoSignInAfterVerification: true,
     sendOnSignUp: true,
-    sendVerificationEmail: async (
-      { user, url, token }: { user: any; url: string; token: string },
-      request: Request
-    ) => {
+    sendVerificationEmail: async ({ user, url, token }, request) => {
       const { error } = await resend.emails.send({
         from: SENDER_EMAIL,
         to: user.email,
@@ -69,10 +63,7 @@ export const auth = betterAuth({
   user: {
     deleteUser: {
       enabled: true,
-      sendDeleteAccountVerification: async (
-        { user, url, token }: { user: any; url: string; token: string }, 
-        request: Request
-      ) => {
+      sendDeleteAccountVerification: async ({ user, url, token }, request) => {
         const { error } = await resend.emails.send({
           from: SENDER_EMAIL,
           to: user.email,
@@ -88,9 +79,9 @@ export const auth = betterAuth({
     changeEmail: {
       enabled: true,
       sendChangeEmailVerification: async (
-        { user, newEmail, url, token }: { user: any; newEmail: string; url: string; token: string },
-        request: Request
-      ) =>  {
+        { user, newEmail, url, token },
+        request
+      ) => {
         const { error } = await resend.emails.send({
           from: SENDER_EMAIL,
           to: newEmail,

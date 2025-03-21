@@ -11,17 +11,23 @@ export default function UserSession({ session }: { session: Session }) {
   const router = useRouter();
 
   return (
-    <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-100 via-white to-gray-200">
+    <div className="w-screen h-screen flex items-center justify-center bg-cover bg-center relative"
+      style={{ backgroundImage: "url('/background/5297078.jpg')" }} 
+    >
+      {/* Background Overlay */}
+      <div className="absolute inset-0 bg-black/50"></div>
+
       {/* Back Button */}
       <button
         onClick={() => router.push("/dashboard")}
-        className="absolute top-6 left-6 flex items-center gap-2 text-gray-700 hover:opacity-80 transition"
+        className="absolute top-6 left-6 flex items-center gap-2 text-white hover:opacity-80 transition z-10"
       >
         <ArrowLeft size={24} />
         <span className="text-lg font-medium">Back</span>
       </button>
 
-      <div className="w-full max-w-2xl bg-white/80 backdrop-blur-xl shadow-lg rounded-xl p-8 border border-gray-300">
+      {/* Session Info Card */}
+      <div className="relative z-10 w-full max-w-2xl bg-white/80 backdrop-blur-xl shadow-lg rounded-xl p-8 border border-gray-300">
         <h2 className="text-3xl font-bold text-gray-800 text-center mb-6 tracking-wide">
           🔐 Session Info
         </h2>
@@ -38,11 +44,11 @@ export default function UserSession({ session }: { session: Session }) {
           </p>
           <p>
             <span className="font-semibold text-gray-600">Logged In At:</span>{" "}
-            {format(createdAt, "dd-MMM-yyyy")}
+            {format(new Date(createdAt), "dd-MMM-yyyy")}
           </p>
           <p>
             <span className="font-semibold text-gray-600">Session Expires At:</span>{" "}
-            {format(expiresAt, "dd-MMM-yyyy")}
+            {format(new Date(expiresAt), "dd-MMM-yyyy")}
           </p>
         </div>
       </div>

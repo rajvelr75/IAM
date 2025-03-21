@@ -3,8 +3,11 @@ import { BASE_URL } from "../constants/env";
 import { adminClient, twoFactorClient } from "better-auth/client/plugins";
 import { organizationClient } from "better-auth/client/plugins";
 import { ac, moderator, user, admin as adminRole } from "@/app/(auth)/permissions";
+import { betterAuth } from "better-auth";
+import { getServerSession } from "../action";
 
 export const authClient = createAuthClient({
+  apiKey: process.env.BETTER_AUTH_API_KEY!,
   baseURL: BASE_URL,
   plugins: [
     twoFactorClient(),
@@ -75,3 +78,10 @@ export const useCreateOrganization = () => {
 
   return { createOrganization };
 };
+
+export async function getAuthClient() {
+  const session = await getServerSession();
+  if (!session || !session.session.token) {
+    throw new Error("Unauthorized: No valid session found");
+  }
+}
